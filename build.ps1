@@ -1,0 +1,1 @@
+clang -std=c11 -Wall -Wextra -Wpedantic test_dyn_array_macro.c -o test_dyn_array.exe
