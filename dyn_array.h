@@ -168,7 +168,19 @@ static inline void *array_ensure_capacity_for_push(void *array, size_t element_s
         (array)[array_header_mut((array))->metadata.length++] = (value)     \
     )
 
-#define array_pop(array) ((array)[--array_header_mut((array))->metadata.length])
+
+static inline size_t array_pop_index(void *array)
+{
+    if (array_length(array) == 0)
+    {
+        abort();
+    }
+
+    return --array_header_mut(array)->metadata.length;
+}
+
+#define array_pop(array) ((array)[array_pop_index((array))])
+
 
 static inline void array_clear(void *array)
 {
@@ -178,12 +190,14 @@ static inline void array_clear(void *array)
     }
 }
 
-#define array_insert(array, index, value)                               \
-    (                                                                   \
-        (array) = array_insert_impl((array), (index), sizeof(*(array))),\
-        (array)[(index)] = (value),                                     \
-        array_header_mut((array))->metadata.length++                    \
-    )
+#define array_insert(array, index, value)                              \
+    do {                                                               \
+        size_t array_insert_index_ = (index);                           \
+        (array) = array_insert_impl(                                   \
+            (array), array_insert_index_, sizeof(*(array)));            \
+        (array)[array_insert_index_] = (value);                         \
+        array_header_mut((array))->metadata.length++;                   \
+    } while (0)
 
 static inline void *array_insert_impl(void *array, size_t index, size_t element_size)
 {

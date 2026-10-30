@@ -166,6 +166,43 @@ void test_array_remove(void)
     array_free(numbers);
 }
 
+void test_array_insert_evaluates_index_once(void)
+{
+    int *numbers = NULL;
+
+    array_push(numbers, 10);
+    array_push(numbers, 20);
+    array_push(numbers, 30);
+
+    size_t index = 1;
+    array_insert(numbers, index++, 99);
+
+    TEST_ASSERT_EQUAL_size_t(2, index);
+    TEST_ASSERT_EQUAL_size_t(4, array_length(numbers));
+
+    TEST_ASSERT_EQUAL_INT(10, numbers[0]);
+    TEST_ASSERT_EQUAL_INT(99, numbers[1]);
+    TEST_ASSERT_EQUAL_INT(20, numbers[2]);
+    TEST_ASSERT_EQUAL_INT(30, numbers[3]);
+
+    array_free(numbers);
+}
+
+void test_array_pop_last_element(void)
+{
+    int *numbers = NULL;
+    array_push(numbers, 42);
+
+    size_t capacity_before = array_capacity(numbers);
+    int value = array_pop(numbers);
+
+    TEST_ASSERT_EQUAL_INT(42, value);
+    TEST_ASSERT_EQUAL_size_t(0, array_length(numbers));
+    TEST_ASSERT_EQUAL_size_t(capacity_before, array_capacity(numbers));
+
+    array_free(numbers);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -178,6 +215,8 @@ int main(void)
     RUN_TEST(test_array_clear);
     RUN_TEST(test_array_insert);
     RUN_TEST(test_array_remove);
+    RUN_TEST(test_array_insert_evaluates_index_once);
+    RUN_TEST(test_array_pop_last_element);
 
     return UNITY_END();
 }
