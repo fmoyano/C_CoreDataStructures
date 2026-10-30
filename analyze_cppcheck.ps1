@@ -1,0 +1,1 @@
+cppcheck --std=c11 --language=c --enable=warning,style,performance,portability --check-level=normal -Ithird_party/unity/src test_dyn_array_macro.c

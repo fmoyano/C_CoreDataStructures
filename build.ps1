@@ -1,1 +1,1 @@
-clang -std=c11 -Wall -Wextra -Wpedantic -Ithird_party/unity/src test_dyn_array_macro.c third_party/unity/src/unity.c -o test_dyn_array.exe
+clang -std=c11 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined -Ithird_party/unity/src test_dyn_array_macro.c third_party/unity/src/unity.c -o test_dyn_array.exe
