@@ -1,9 +1,6 @@
 #include "dyn_array.h"
 #include "unity.h"
 
-#include <stdlib.h>
-#include <limits.h>
-
 
 void setUp(void)
 {
@@ -11,88 +8,6 @@ void setUp(void)
 
 void tearDown(void)
 {
-}
-
-static void analyzer_use_after_free(void)
-{
-    int *p = malloc(sizeof(*p));
-
-    if (p == NULL)
-    {
-        return;
-    }
-
-    free(p);
-
-    *p = 42;
-}
-
-static void analyzer_use_after_free2(int release)
-{
-    int *p = malloc(sizeof(*p));
-
-    if (p == NULL)
-    {
-        return;
-    }
-
-    if (release)
-    {
-        free(p);
-    }
-
-    *p = 42;
-
-    if (!release)
-    {
-        free(p);
-    }
-}
-
-static void analyzer_leak_demo1(void)
-{
-    int *numbers = array_allocate(4, sizeof(*numbers));
-
-    if (numbers == NULL)
-    {
-        return;
-    }
-
-    numbers[0] = 42;
-
-    /* Intentionally missing array_free(numbers); */
-}
-
-static void analyzer_no_leak_demo2(void)
-{
-    int *numbers = array_allocate(4, sizeof(*numbers));
-
-    if (numbers == NULL)
-    {
-        return;
-    }
-
-    numbers[0] = 42;
-
-    array_free(numbers);
-}
-
-void test_ubsan_signed_overflow(void)
-{
-    volatile int value = INT_MAX;
-
-    value += 1;
-}
-
-void test_asan_use_after_free(void)
-{
-    int *p = malloc(sizeof(*p));
-
-    TEST_ASSERT_NOT_NULL(p);
-
-    free(p);
-
-    *p = 42;
 }
 
 void test_array_allocate_and_free(void)
@@ -263,9 +178,6 @@ int main(void)
     RUN_TEST(test_array_clear);
     RUN_TEST(test_array_insert);
     RUN_TEST(test_array_remove);
-    //Tests deliberadamente inválidos
-    //RUN_TEST(test_asan_use_after_free);
-    //RUN_TEST(test_ubsan_signed_overflow);
 
     return UNITY_END();
 }

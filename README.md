@@ -55,7 +55,26 @@ The macros infer the element size from the pointer type where possible, allowing
 
 Unit tests use the [Unity](https://github.com/ThrowTheSwitch/Unity) test framework.
 
-Tests are compiled with Clang using C11 and strict warnings.
+Initialize Unity after cloning (GitHub ZIP downloads do not include submodule contents):
+
+```bash
+git submodule update --init --recursive
+```
+
+On Windows with Clang available on PATH:
+
+```powershell
+.\build.ps1   # Compile with AddressSanitizer and UndefinedBehaviorSanitizer
+.\test.ps1    # Build and run the eight library tests
+.\analyze.ps1
+.\analyze_cppcheck.ps1
+```
+
+`test.ps1` discovers the runtime directory from the installed Clang version.
+Clang must support the requested sanitizers on your platform. Cppcheck is
+required only for `analyze_cppcheck.ps1`.
+
+For a manual build with C11 and strict warnings:
 
 Example:
 
@@ -88,7 +107,29 @@ The project currently uses:
 * AddressSanitizer
 * UndefinedBehaviorSanitizer
 
-Static analysis tools will also be integrated into the development workflow.
+Static analysis scripts use Clang Static Analyzer and Cppcheck. They target
+only the library test translation unit, not the deliberately unsafe examples.
+
+## Repository layout
+
+- `dyn_array.h`: current generic dynamic array implementation.
+- `test_dyn_array_macro.c`: eight Unity tests for the library.
+- `build.ps1`, `test.ps1`: Windows build and test entry points.
+- `analyze.ps1`, `analyze_cppcheck.ps1`: library static analysis.
+- `examples/tooling/`: isolated sanitizer and static-analysis demonstrations;
+  see its [README](examples/tooling/README.md) for commands and expected failures.
+- `third_party/unity/`: Unity test framework (Git submodule).
+
+The previous integer-only array and its tests have been removed. They remain
+available in Git history.
+
+## Current limitations
+
+This is an educational work in progress. Passing the current tests does not
+establish memory safety for every input. In particular, `array_pop` requires a
+non-empty array; macro arguments must not have side effects; and inserting a
+value taken from the same array can be affected by element shifting. These
+API issues are separate from the repository cleanup.
 
 ## Project philosophy
 
